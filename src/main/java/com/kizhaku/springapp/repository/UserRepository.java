@@ -15,7 +15,7 @@ public class UserRepository {
 
     public User addUser(User user) {
         if(users.containsKey(user.getId()))
-            throw new UserAlreadyExistsException();
+            throw new UserAlreadyExistsException(user.getId());
 
         users.put(user.getId(), user);
         return user;
