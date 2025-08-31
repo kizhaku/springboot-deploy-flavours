@@ -3,10 +3,10 @@ package com.kizhaku.springapp.dto;
 import lombok.Getter;
 
 @Getter
-public class UserErrorResponseDto extends ErrorResponseDto {
+public class UserErrorResponse extends ErrorResponse {
     private final String userId;
 
-    public UserErrorResponseDto(String userId, String error, String message) {
+    public UserErrorResponse(String userId, String error, String message) {
         super(error, message);
         this.userId = userId;
     }

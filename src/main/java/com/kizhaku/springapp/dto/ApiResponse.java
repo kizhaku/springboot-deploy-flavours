@@ -15,7 +15,7 @@ import java.time.Instant;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class ApiResponseDto {
+public class ApiResponse {
     String requestId;
     Instant timeStamp;
 }

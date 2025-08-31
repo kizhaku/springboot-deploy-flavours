@@ -1,6 +1,6 @@
 package com.kizhaku.springapp.mapper;
 
-import com.kizhaku.springapp.dto.UserResponseDto;
+import com.kizhaku.springapp.dto.UserResponse;
 import com.kizhaku.springapp.model.User;
 import org.mapstruct.AfterMapping;
 import org.mapstruct.Mapper;
@@ -11,14 +11,14 @@ import java.time.Instant;
 import java.util.UUID;
 
 @Mapper(componentModel = "spring")
-public interface UserMapper {
+public interface UserResponseMapper {
 
     @Mapping(target = "fullName", expression = "java(fullName(user.getFirstName(), user.getLastName()))")
     @Mapping(target = "userId", source = "user.id")
-    UserResponseDto toResponse(User user);
+    UserResponse toResponse(User user);
 
     @AfterMapping
-    default void fillBaseResponse(@MappingTarget UserResponseDto userResp) {
+    default void fillBaseResponse(@MappingTarget UserResponse userResp) {
         userResp.setTimeStamp(Instant.now());
         userResp.setRequestId(UUID.randomUUID().toString());
     }

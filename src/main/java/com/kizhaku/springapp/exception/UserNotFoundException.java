@@ -9,7 +9,10 @@ public class UserNotFoundException extends RuntimeException {
     private String error;
     private String message = "User %s not found in system.";
 
-    public UserNotFoundException() {};
+    public UserNotFoundException() {
+        this.error = ErrorMessages.USERS_EMPTY.getError();
+        this.message = ErrorMessages.USERS_EMPTY.getError();
+    };
 
     public UserNotFoundException(String userId) {
         this.userId = userId;
