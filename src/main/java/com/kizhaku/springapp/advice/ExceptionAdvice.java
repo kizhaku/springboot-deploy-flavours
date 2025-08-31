@@ -1,5 +1,6 @@
 package com.kizhaku.springapp.advice;
 
+import com.kizhaku.springapp.dto.ErrorResponseDto;
 import com.kizhaku.springapp.dto.UserErrorResponseDto;
 import com.kizhaku.springapp.exception.UserAlreadyExistsException;
 import com.kizhaku.springapp.exception.UserNotFoundException;
@@ -24,5 +25,13 @@ public class ExceptionAdvice {
         return new ResponseEntity<>(
                 new UserErrorResponseDto(ex.getUserId(), ex.getError(), ex.getMessage()),
                 ErrorMessages.USER_ALREADY_EXISTS.getStatus());
+    }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ErrorResponseDto> defaultExceptionResponse(Exception ex) {
+        return new ResponseEntity<>(
+                new ErrorResponseDto(ErrorMessages.DEFAULT_EXCEPTION.getError(),
+                        ErrorMessages.DEFAULT_EXCEPTION.getError()),
+                        ErrorMessages.DEFAULT_EXCEPTION.getStatus());
     }
 }

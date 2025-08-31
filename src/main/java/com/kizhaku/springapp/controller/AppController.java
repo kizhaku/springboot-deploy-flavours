@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("api/v1/")
 @Tag(name = "App Controller")
 public class AppController {
-
     private final UserService userService;
     private final UserMapper userMapper;
 
@@ -37,7 +36,6 @@ public class AppController {
     @GetMapping("user/{id}")
     public ResponseEntity<User> getUser(@PathVariable String id) {
         User user = userService.findByuserId(id);
-
         return new ResponseEntity<>(user, HttpStatus.FOUND);
     }
 }
