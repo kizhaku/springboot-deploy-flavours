@@ -5,8 +5,8 @@ plugins {
 }
 
 group = 'com.kizhaku'
-version = '0.0.1-SNAPSHOT'
-description = 'Demo project for Spring Boot'
+version = '1.0'
+description = 'Springboot Project Template with Deployment Flavours'
 
 java {
 	toolchain {
