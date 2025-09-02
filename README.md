@@ -1,7 +1,6 @@
 # springboot-deploy-flavours
 
 ## Standalone setup - VM
-## Docker setup
 ## Kubernetes setup
 
 ## About the app
