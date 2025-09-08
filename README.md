@@ -5,7 +5,7 @@
 
 ## About the app
 
-- A further enhancement to the simple CRUD app built in Spring Boot running on a server with observability setup locally.
+- A further enhancement to the Spring Boot app running with different flavours of deployment. Ideally can be used as a template.
 - No database connection. Stores data in a static map. Gets reset with restart.
 - Uses Prometheus and Loki for health metrics, alerts, and logs collection.
 - Uses Grafana for metrics and logs visualization.
