@@ -10,6 +10,9 @@
 - Uses Prometheus and Loki for health metrics, alerts, and logs collection.
 - Uses Grafana for metrics and logs visualization.
 - Future iteration will be to containerize the app and tools, then shift the application and tools into a Kubernetes setup.
+  Update:
+  - This is working in AWS EKS.
+  - Next step: Automate the deployment.
 
 ## Requirements
 
