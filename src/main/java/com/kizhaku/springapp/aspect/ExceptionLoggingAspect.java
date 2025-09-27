@@ -29,5 +29,5 @@ public class ExceptionLoggingAspect {
                 Arrays.toString(joinPoint.getArgs()),
                 ex.getMessage(),
                 ex);
-    } 
+    }
 }
