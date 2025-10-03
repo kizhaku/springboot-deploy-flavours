@@ -45,6 +45,8 @@ spec:
           - name: TASKS
             value:
               - build
+          - name: GRADLE_IMAGE
+            value: gradle:8.10.2-jdk21
 
       - name: build-and-push-image
         runAfter: [build-jar]
@@ -57,4 +59,8 @@ spec:
           - name: IMAGE
             value: $(params.IMAGE)
           - name: DOCKERFILE
-            value: ./Dockerfile
+            value: dockerfile
+          - name: CONTEXT
+            value: /workspace/source
+          - name: BUILDER_IMAGE
+            value: gcr.io/kaniko-project/executor:v1.23.2
