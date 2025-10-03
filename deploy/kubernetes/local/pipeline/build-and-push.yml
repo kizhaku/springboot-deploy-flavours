@@ -59,7 +59,7 @@ spec:
           - name: IMAGE
             value: $(params.IMAGE)
           - name: DOCKERFILE
-            value: dockerfile
+            value: Dockerfile
           - name: CONTEXT
             value: /workspace/source
           - name: BUILDER_IMAGE
