@@ -70,5 +70,6 @@ Build app:
   kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/gradle/0.3/gradle.yaml -n tekton-pipelines
 - Install kaniko task for building/pushing
   kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/kaniko/0.6/kaniko.yaml -n tekton-pipelines
+  kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/buildah/0.9/buildah.yaml -n tekton-pipelines
 - Create PVC for workspace
   kubectl apply -f deploy/kubernetes/local/tekton-workspace-pvc.yaml

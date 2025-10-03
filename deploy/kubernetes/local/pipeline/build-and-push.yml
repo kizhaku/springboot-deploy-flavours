@@ -49,9 +49,9 @@ spec:
             value: gradle:8.10.2-jdk21
 
       - name: build-and-push-image
-        runAfter: [build-jar]
+        runAfter: [ build-jar ]
         taskRef:
-          name: kaniko
+          name: buildah
         workspaces:
           - name: source
             workspace: shared-workspace
@@ -61,6 +61,6 @@ spec:
           - name: DOCKERFILE
             value: Dockerfile
           - name: CONTEXT
-            value: /workspace/source
-          - name: BUILDER_IMAGE
-            value: gcr.io/kaniko-project/executor:debug
+            value: .
+          - name: TLSVERIFY
+            value: "false"
