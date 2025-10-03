@@ -1,0 +1,60 @@
+apiVersion: tekton.dev/v1beta1
+kind: PipelineRun
+metadata:
+  generateName: spring-build-and-push-
+  namespace: tekton-pipelines
+spec:
+  serviceAccountName: build-bot
+  params:
+    - name: IMAGE
+      value: docker.io/akizhaku/springapp:latest
+  workspaces:
+    - name: shared-workspace
+      persistentVolumeClaim:
+        claimName: tekton-workspace-pvc
+  pipelineSpec:
+    workspaces:
+      - name: shared-workspace
+    params:
+      - name: IMAGE
+        type: string
+        default: ""
+    tasks:
+      - name: clone
+        taskRef:
+          name: git-clone
+        workspaces:
+          - name: output
+            workspace: shared-workspace
+        params:
+          - name: url
+            value: https://github.com/kizhaku/springboot-deploy-flavours.git
+          - name: revision
+            value: main
+          - name: deleteExisting
+            value: "true"
+
+      - name: build-jar
+        runAfter: [clone]
+        taskRef:
+          name: gradle
+        workspaces:
+          - name: source
+            workspace: shared-workspace
+        params:
+          - name: TASKS
+            value:
+              - build
+
+      - name: build-and-push-image
+        runAfter: [build-jar]
+        taskRef:
+          name: kaniko
+        workspaces:
+          - name: source
+            workspace: shared-workspace
+        params:
+          - name: IMAGE
+            value: $(params.IMAGE)
+          - name: DOCKERFILE
+            value: ./Dockerfile
