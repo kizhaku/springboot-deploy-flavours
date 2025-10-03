@@ -63,4 +63,4 @@ spec:
           - name: CONTEXT
             value: /workspace/source
           - name: BUILDER_IMAGE
-            value: gcr.io/kaniko-project/executor:v1.23.2
+            value: gcr.io/kaniko-project/executor:debug
