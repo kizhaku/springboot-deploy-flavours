@@ -1,0 +1,32 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: hello-task
+  namespace: tekton-pipelines
+spec:
+  steps:
+    - name: say-hello
+      image: alpine:3.19
+      securityContext:
+        allowPrivilegeEscalation: false
+        runAsNonRoot: true
+        runAsUser: 65534
+        capabilities:
+          drop: [ "ALL" ]
+        seccompProfile:
+          type: RuntimeDefault
+      script: |
+        #!/bin/sh
+        echo "Hello from Tekton!"
+
+---
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  name: hello-pipeline
+  namespace: tekton-pipelines
+spec:
+  tasks:
+    - name: run-hello
+      taskRef:
+        name: hello-task
