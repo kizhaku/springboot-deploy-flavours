@@ -24,7 +24,7 @@ spec:
         - name: deleteExisting
           value: "true"
 
-    - name: build-jar
+    - name: run-tests
       runAfter: [fetch-repo]
       taskRef:
         name: gradle
@@ -36,7 +36,23 @@ spec:
           value: gradle:8.10.2-jdk21
         - name: TASKS
           value:
+            - test
+
+    - name: build-jar
+      runAfter: [run-tests]
+      taskRef:
+        name: gradle
+      workspaces:
+        - name: source
+          workspace: shared-workspace
+      params:
+        - name: GRADLE_IMAGE
+          value: gradle:8.10.2-jdk21
+        - name: TASKS
+          value:
             - build
+            - "-x"
+            - test
 
     - name: build-and-push-image
       runAfter: [build-jar]
