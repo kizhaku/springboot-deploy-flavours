@@ -76,3 +76,27 @@ Build app:
   <code>kubectl apply -f infra/kubernetes/tekton/pipeline/pipeline-springapp-build-and-push.yml</code>
 - Run the pipeline
   <code>kubectl create -f infra/kubernetes/tekton/pipeline/pipelinerun-springapp.yml</code>
+
+Add code coverage
+    - Create namespace for sonarqube
+    <code>kubectl create namespace sonarqube</code>
+    - Add a values.yml for Helm infra/kubernetes/sonarqube/values.yml
+    - helm repo add sonarqube https://SonarSource.github.io/helm-chart-sonarqube
+    - Create a monitoring secret
+    kubectl create secret generic sonarqube-monitoring-passcode \
+    -n sonarqube \
+    --from-literal=passcode=sonarPass123
+    - Install sonarqube
+    - helm install sonarqube sonarqube/sonarqube \
+        -n sonarqube \
+        -f infra/sonarqube/values.yml
+    Check sonarqube service
+    kubectl get svc -n sonarqube
+    - Access UI
+    minikube service sonarqube-sonarqube -n sonarqube --url
+    - Create a token under security
+    -
+        kubectl create secret generic sonar-auth \
+        -n tekton-pipelines \
+        --from-literal=SONAR_TOKEN=<token>
+    

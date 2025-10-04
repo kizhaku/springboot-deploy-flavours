@@ -1,0 +1,26 @@
+persistence:
+  enabled: true
+  size: 2Gi
+
+postgresql:
+  enabled: true
+  persistence:
+    size: 2Gi
+
+resources:
+  requests:
+    cpu: "500m"
+    memory: "1Gi"
+  limits:
+    cpu: "1"
+    memory: "2Gi"
+
+service:
+  type: NodePort
+  nodePort: 30090
+
+community:
+  enabled: true
+
+monitoringPasscodeSecretName: sonarqube-monitoring-passcode
+monitoringPasscodeSecretKey: passcode

@@ -3,6 +3,7 @@ plugins {
 	id 'org.springframework.boot' version '3.5.5'
 	id 'io.spring.dependency-management' version '1.1.7'
     id 'jacoco'
+    id "org.sonarqube" version "4.4.1.3373"
 }
 
 group = 'com.kizhaku'
@@ -57,6 +58,16 @@ tasks.jacocoTestReport {
     }
 }
 
+
 tasks.named('test') {
 	useJUnitPlatform()
+}
+
+sonar {
+    properties {
+        property "sonar.projectKey", "springapp"
+        property "sonar.host.url", "http://localhost:59641"
+        property "sonar.login", "squ_56608ab3a28d5d90770e5ac83652196ec52efc65"
+        property "sonar.coverage.jacoco.xmlReportPaths", "build/reports/jacoco/test/jacocoTestReport.xml"
+    }
 }
