@@ -1,0 +1,20 @@
+apiVersion: tekton.dev/v1beta1
+kind: PipelineRun
+metadata:
+  generateName: springapp-build-and-push-run-
+  namespace: tekton-pipelines
+spec:
+  pipelineRef:
+    name: springapp-build-and-push
+  params:
+    - name: IMAGE
+      value: docker.io/akizhaku/springapp:latest
+  workspaces:
+    - name: shared-workspace
+      volumeClaimTemplate:
+        spec:
+          accessModes: ["ReadWriteOnce"]
+          resources:
+            requests:
+              storage: 1Gi
+  serviceAccountName: build-bot

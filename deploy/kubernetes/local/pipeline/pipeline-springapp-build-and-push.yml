@@ -1,0 +1,56 @@
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  name: springapp-build-and-push
+  namespace: tekton-pipelines
+spec:
+  workspaces:
+    - name: shared-workspace
+  params:
+    - name: IMAGE
+      type: string
+  tasks:
+    - name: fetch-repo
+      taskRef:
+        name: git-clone
+      workspaces:
+        - name: output
+          workspace: shared-workspace
+      params:
+        - name: url
+          value: https://github.com/kizhaku/springboot-deploy-flavours.git
+        - name: revision
+          value: main
+        - name: deleteExisting
+          value: "true"
+
+    - name: build-jar
+      runAfter: [fetch-repo]
+      taskRef:
+        name: gradle
+      workspaces:
+        - name: source
+          workspace: shared-workspace
+      params:
+        - name: GRADLE_IMAGE
+          value: gradle:8.10.2-jdk21
+        - name: TASKS
+          value:
+            - build
+
+    - name: build-and-push-image
+      runAfter: [build-jar]
+      taskRef:
+        name: buildah
+      workspaces:
+        - name: source
+          workspace: shared-workspace
+      params:
+        - name: IMAGE
+          value: $(params.IMAGE)
+        - name: DOCKERFILE
+          value: Dockerfile
+        - name: CONTEXT
+          value: .
+        - name: TLSVERIFY
+          value: "false"

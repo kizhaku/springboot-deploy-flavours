@@ -63,14 +63,16 @@ Build app:
   -n tekton-pipelines
     </code>
 - Create a service account
-  <code>kubectl apply -f deploy/kubernetes/local/build-bot-sa.yaml</code>
+  <code>kubectl apply -f deploy/kubernetes/local/sa-build-bot.yml</code>
 - Install Git clone task
-  kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/git-clone/0.9/git-clone.yaml -n tekton-pipelines
+  <code>kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/git-clone/0.9/git-clone.yaml -n tekton-pipelines</code>
 - Install Gradle task
-  kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/gradle/0.3/gradle.yaml -n tekton-pipelines
+  <code>kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/gradle/0.3/gradle.yaml -n tekton-pipelines</code>
 - Install buildah task for building/pushing
-  kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/buildah/0.9/buildah.yaml -n tekton-pipelines
+  <code>kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/buildah/0.9/buildah.yaml -n tekton-pipelines</code>
 - Create PVC for workspace
-  kubectl apply -f deploy/kubernetes/local/tekton-workspace-pvc.yaml
-- Run the build and push
-  kubectl create -f deploy/kubernetes/local/build-and-push.yml
+  <code>kubectl apply -f deploy/kubernetes/local/tekton-workspace-pvc.yml</code>
+- Create the pipeline
+  <code>kubectl apply -f deploy/kubernetes/local/pipeline-springapp-build-and-push.yml</code>
+- Run the pipeline
+  <code>kubectl create -f deploy/kubernetes/local/pipelinerun-springapp.yml</code>
