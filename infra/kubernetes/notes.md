@@ -49,9 +49,9 @@ Note:
       </code>
 - Test pipeline with a sample pipeline
   - Pipeline
-    - <code>kubectl apply -f deploy/kubernetes/local/pipeline-test.yml</code>
+    - <code>kubectl apply -f infra/kubernetes/tekton/pipeline/test/pipeline-test.yml</code>
   - Pipeline run
-    - <code>kubectl create -f deploy/kubernetes/local/pipeline-test-run.yml</code>
+    - <code>kubectl create -f infra/kubernetes/tekton/pipeline/test/pipeline-test-run.yml</code>
 
 Build app:
 - Create secret for docker push to repo
@@ -63,7 +63,7 @@ Build app:
   -n tekton-pipelines
     </code>
 - Create a service account
-  <code>kubectl apply -f deploy/kubernetes/local/sa-build-bot.yml</code>
+  <code>kubectl apply -f infra/kubernetes/tekton/pipeline/sa-build-bot.yml</code>
 - Install Git clone task
   <code>kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/git-clone/0.9/git-clone.yaml -n tekton-pipelines</code>
 - Install Gradle task
@@ -71,8 +71,8 @@ Build app:
 - Install buildah task for building/pushing
   <code>kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/buildah/0.9/buildah.yaml -n tekton-pipelines</code>
 - Create PVC for workspace
-  <code>kubectl apply -f deploy/kubernetes/local/tekton-workspace-pvc.yml</code>
+  <code>kubectl apply -f infra/kubernetes/tekton/pipeline/tekton-workspace-pvc.yml</code>
 - Create the pipeline
-  <code>kubectl apply -f deploy/kubernetes/local/pipeline-springapp-build-and-push.yml</code>
+  <code>kubectl apply -f infra/kubernetes/tekton/pipeline/pipeline-springapp-build-and-push.yml</code>
 - Run the pipeline
-  <code>kubectl create -f deploy/kubernetes/local/pipelinerun-springapp.yml</code>
+  <code>kubectl create -f infra/kubernetes/tekton/pipeline/pipelinerun-springapp.yml</code>
