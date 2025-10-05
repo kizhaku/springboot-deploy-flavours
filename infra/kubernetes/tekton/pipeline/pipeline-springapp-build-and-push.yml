@@ -49,7 +49,7 @@ spec:
             script: |
               gradle sonar \
                 -Dsonar.host.url=$SONAR_HOST_URL \
-                -Dsonar.login=$SONAR_TOKEN
+                -Dsonar.token=$SONAR_TOKEN
             env:
               - name: SONAR_HOST_URL
                 value: "http://sonarqube-sonarqube.sonarqube:9000"
