@@ -40,14 +40,16 @@ spec:
            - jacocoTestReport
 
     - name: sonar-analysis
-      runAfter: [run-tests]
+      runAfter: [ run-tests ]
       taskSpec:
         steps:
           - name: sonar-analysis
             image: gradle:8.10.2-jdk21
-            workingDir: /workspace/shared-workspace
+            workingDir: /workspace/source
             script: |
-              ./gradlew sonarqube
+              gradle sonar \
+                -Dsonar.host.url=$SONAR_HOST_URL \
+                -Dsonar.login=$SONAR_TOKEN
             env:
               - name: SONAR_HOST_URL
                 value: "http://sonarqube-sonarqube.sonarqube:9000"
@@ -57,7 +59,10 @@ spec:
                     name: sonar-auth
                     key: SONAR_TOKEN
         workspaces:
-          - name: shared-workspace
+          - name: source
+      workspaces:
+        - name: source
+          workspace: shared-workspace
 
     - name: build-jar
       runAfter: [sonar-analysis]
