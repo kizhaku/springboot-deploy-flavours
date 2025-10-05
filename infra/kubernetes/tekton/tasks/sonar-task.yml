@@ -1,0 +1,31 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: gradle-sonar
+  namespace: tekton-pipelines
+spec:
+  workspaces:
+    - name: source
+  params:
+    - name: GRADLE_IMAGE
+      type: string
+    - name: TASKS
+      type: string
+      description: "Space-separated Gradle tasks"
+    - name: ARGS
+      type: string
+      default: ""
+      description: "Extra arguments to Gradle"
+  steps:
+    - name: gradle
+      image: $(params.GRADLE_IMAGE)
+      workingDir: /workspace/source
+      env:
+        - name: SONAR_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: sonar-auth
+              key: SONAR_TOKEN
+      script: |
+        #!/bin/sh
+        ./gradlew $(params.TASKS) $(params.ARGS) -Dsonar.login=$SONAR_TOKEN

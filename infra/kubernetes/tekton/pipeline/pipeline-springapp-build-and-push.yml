@@ -40,30 +40,23 @@ spec:
 
     - name: sonar-analysis
       runAfter: [ run-tests ]
-      taskSpec:
-        workspaces:
-          - name: source
-        steps:
-          - name: sonar
-            image: gradle:8.4-jdk17
-            workingDir: /workspace/source
-            script: |
-              #!/bin/sh
-              ./gradlew sonar \
-                -Dsonar.host.url=http://sonarqube-sonarqube.sonarqube:9000 \
-                -Dsonar.login=$(SONAR_TOKEN)
-            env:
-              - name: SONAR_TOKEN
-                valueFrom:
-                  secretKeyRef:
-                    name: sonar-auth
-                    key: SONAR_TOKEN
+      taskRef:
+        name: gradle-sonar
       workspaces:
         - name: source
           workspace: shared-workspace
+      params:
+        - name: GRADLE_IMAGE
+          value: gradle:8.10.2-jdk21
+        - name: TASKS
+          value:
+            - sonar
+        - name: ARGS
+          value:
+            - "-Dsonar.host.url=http://sonarqube-sonarqube.sonarqube:9000"
 
     - name: build-jar
-      runAfter: [run-tests]
+      runAfter: [sonar-analysis]
       taskRef:
         name: gradle
       workspaces:
