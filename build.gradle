@@ -66,8 +66,10 @@ tasks.named('test') {
 sonar {
     properties {
         property "sonar.projectKey", "springapp"
-        property "sonar.host.url", "http://localhost:60694"
-        property "sonar.login", "squ_56608ab3a28d5d90770e5ac83652196ec52efc65"
+        property "sonar.projectName", "Spring boot deploy flavours"
+        property "sonar.host.url", System.getenv("SONAR_HOST_URL") ?: "http://localhost:9000"
+        property "sonar.login", System.getenv("SONAR_TOKEN") ?: ""
+        property "sonar.java.coveragePlugin", "jacoco"
         property "sonar.coverage.jacoco.xmlReportPaths", "build/reports/jacoco/test/jacocoTestReport.xml"
     }
 }
