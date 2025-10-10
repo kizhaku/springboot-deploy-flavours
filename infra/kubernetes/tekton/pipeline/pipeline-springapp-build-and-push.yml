@@ -40,14 +40,14 @@ spec:
            - jacocoTestReport
 
     - name: sonar-analysis
-      runAfter: [ run-tests ]
+      runAfter: [run-tests]
       taskSpec:
         steps:
           - name: sonar-analysis
             image: gradle:8.10.2-jdk21
             workingDir: /workspace/source
             script: |
-              gradle sonar \
+              gradle sonar --no-daemon \
                 -Dsonar.host.url=$SONAR_HOST_URL \
                 -Dsonar.token=$SONAR_TOKEN
             env:
@@ -58,14 +58,56 @@ spec:
                   secretKeyRef:
                     name: sonar-auth
                     key: SONAR_TOKEN
+            resources:
+              requests:
+                memory: "1Gi"
+                cpu: "500m"
+              limits:
+                memory: "2Gi"
+                cpu: "1"
         workspaces:
           - name: source
       workspaces:
         - name: source
           workspace: shared-workspace
 
-    - name: build-jar
+    - name: quality-gate
       runAfter: [sonar-analysis]
+      taskSpec:
+        steps:
+          - name: quality-gate-check
+            image: akizhaku/ci-tools:latest
+            script: |
+              #!/bin/sh
+              set -e
+              
+              echo "Checking SonarQube Quality Gate..."
+              
+              analysisId=$(curl -s -u $SONAR_TOKEN: \
+              "$SONAR_HOST_URL/api/project_analyses/search?project=springapp" \
+              | jq -r '.analyses[0].key')
+              
+              status=$(curl -s -u $SONAR_TOKEN: \
+              "$SONAR_HOST_URL/api/qualitygates/project_status?analysisId=$analysisId" \
+              | jq -r '.projectStatus.status')
+              
+              echo "Quality Gate status: $status"
+              if [ "$status" != "OK" ]; then
+                echo "Quality Gate failed"
+                exit 1
+              fi
+              echo "Quality Gate passed"
+            env:
+              - name: SONAR_HOST_URL
+                value: "http://sonarqube-sonarqube.sonarqube:9000"
+              - name: SONAR_TOKEN
+                valueFrom:
+                  secretKeyRef:
+                    name: sonar-auth
+                    key: SONAR_TOKEN
+
+    - name: build-jar
+      runAfter: [quality-gate]
       taskRef:
         name: gradle
       workspaces:
