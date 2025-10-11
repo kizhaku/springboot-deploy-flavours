@@ -1,11 +1,11 @@
 apiVersion: tekton.dev/v1beta1
 kind: PipelineRun
 metadata:
-  generateName: springapp-build-and-push-run-
+  generateName: springapp-run-without-sonar-
   namespace: tekton-pipelines
 spec:
   pipelineRef:
-    name: springapp-build-and-push
+    name: springapp-build-and-push-without-sonar
   params:
     - name: IMAGE
       value: docker.io/akizhaku/springapp:latest
