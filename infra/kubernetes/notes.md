@@ -35,50 +35,50 @@ Create a namespace for the pipeline
       <code>kubectl annotate namespace tekton-pipelines meta.helm.sh/release-namespace=tekton-pipelines --overwrite</code>
 Install Tekton
   <code>helm install tekton cdf/tekton-pipeline --version 1.4.0 -n tekton-pipelines</code>
-Install Tekton dashboard
-  - <code>kubectl apply -f https://storage.googleapis.com/tekton-releases/dashboard/latest/release-full.yaml</code>
-  - Verify services
-    <code>kubectl get svc -n tekton-pipelines</code>
-  - Start dashboard
-    - <code>kubectl -n tekton-pipelines port-forward svc/tekton-dashboard 9097:9097</code>
-    - Set privileges for pipeline to run:
-      <code>
-      kubectl label --overwrite ns tekton-pipelines \
-      pod-security.kubernetes.io/enforce=privileged \
-      pod-security.kubernetes.io/audit=privileged \
-      pod-security.kubernetes.io/warn=privileged
-      </code>
-- Test pipeline with a sample pipeline
-  - Pipeline
-    - <code>kubectl apply -f infra/kubernetes/tekton/pipeline/test/pipeline-test.yml</code>
-  - Pipeline run
-    - <code>kubectl create -f infra/kubernetes/tekton/pipeline/test/pipeline-test-run.yml</code>
+  Install Tekton dashboard
+    - <code>kubectl apply -f https://storage.googleapis.com/tekton-releases/dashboard/latest/release-full.yaml</code>
+    - Verify services
+      <code>kubectl get svc -n tekton-pipelines</code>
+    - Start dashboard
+      - <code>kubectl -n tekton-pipelines port-forward svc/tekton-dashboard 9097:9097</code>
+      - Set privileges for pipeline to run:
+        <code>
+        kubectl label --overwrite ns tekton-pipelines \
+        pod-security.kubernetes.io/enforce=privileged \
+        pod-security.kubernetes.io/audit=privileged \
+        pod-security.kubernetes.io/warn=privileged
+        </code>
+  - Test pipeline with a sample pipeline
+    - Pipeline
+      - <code>kubectl apply -f infra/kubernetes/tekton/pipeline/test/pipeline-test.yml</code>
+    - Pipeline run
+      - <code>kubectl create -f infra/kubernetes/tekton/pipeline/test/pipeline-test-run.yml</code>
 
 Build and deploy app:
-Create secret for docker push to repo
-  <code>
-    kubectl create secret docker-registry dockerhub-secret \
-  --docker-username=<your-dockerhub-username> \
-  --docker-password=<your-dockerhub-pat> \
-  --docker-email=<your-email> \
-  -n tekton-pipelines
-    </code>
+  Create secret for docker push to repo
+    <code>
+      kubectl create secret docker-registry dockerhub-secret \
+    --docker-username=<your-dockerhub-username> \
+    --docker-password=<your-dockerhub-pat> \
+    --docker-email=<your-email> \
+    -n tekton-pipelines
+      </code>
 
 Create token for write access to repo. This will be used to update image tag.
-    kubectl create secret generic git-credentials \
-  --from-literal=username=tekton-bot \
-  --from-literal=password=<PERSONAL_ACCESS_TOKEN> \
-  -n tekton-pipelines
+      kubectl create secret generic git-credentials \
+    --from-literal=username=tekton-bot \
+    --from-literal=password=<PERSONAL_ACCESS_TOKEN> \
+    -n tekton-pipelines
 
 Add secrets to the build bot
-kubectl apply -f infra/kubernetes/tekton/service/build-bot-serviceaccount.yaml  
+  kubectl apply -f infra/kubernetes/tekton/service/build-bot-serviceaccount.yaml  
 
-Install Git clone task
-  <code>kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/git-clone/0.9/git-clone.yaml -n tekton-pipelines</code>
-Install Gradle task
-  <code>kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/gradle/0.3/gradle.yaml -n tekton-pipelines</code>
-Install buildah task for building/pushing
-  <code>kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/buildah/0.9/buildah.yaml -n tekton-pipelines</code>
+  Install Git clone task
+    <code>kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/git-clone/0.9/git-clone.yaml -n tekton-pipelines</code>
+  Install Gradle task
+    <code>kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/gradle/0.3/gradle.yaml -n tekton-pipelines</code>
+  Install buildah task for building/pushing
+    <code>kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/buildah/0.9/buildah.yaml -n tekton-pipelines</code>
 
 Install SonarQube
   - Create namespace for sonarqube
@@ -95,9 +95,40 @@ Install SonarQube
     <code>kubectl port-forward service/sonarqube-sonarqube 9000:9000 -n sonarqube</code>
   - Create a secret for Sonar. Access UI, under security create a new token
     <code>kubectl create secret generic sonar-auth -n tekton-pipelines --from-literal=SONAR_TOKEN=<token></code>
-    
-    Add secrets to the build bot
+
+  Add secrets to the build bot
     kubectl apply -f infra/kubernetes/tekton/service/build-bot-serviceaccount.yaml
+
+Install ArgoCD
+  Add repo
+    <code>helm repo add argo https://argoproj.github.io/argo-helm</code>
+  Create namespace
+    <code>kubectl create namespace argocd</code>
+  Install
+    <code>helm install argocd argo/argo-cd -n argocd</code>
+  Access Dashboard
+    kubectl port-forward service/argocd-server -n argocd 8080:443
+    http://localhost:8080
+  Create manifest for repo
+    infra/kubernetes/argocd/springapp.yml
+  Register repo
+    This should register the repo and ArgoCD will sync the cluster with the expected. The path provided is path: infra/kubernetes/local.
+    ArgoCD monitors the Kubernetes manifests and applies it to maintain the state. So when Tekton pushes a new image and updates the image tag, ArgoCD will apply the manifest, which will initiate the app deployment.
+
+    kubectl apply -f infra/kubernetes/argocd/springapp.yml -n argocd
+
+    **Optional through CLI:
+      Install argocd CLI
+      argocd login localhost:8080 --username admin --password <password> --insecure
+      argocd repo add https://github.com/kizhaku/springboot-deploy-flavours.git --username <github-username> --password <token>
+      argocd app create springapp \
+      --repo https://github.com/kizhaku/springboot-deploy-flavours.git \
+      --path infra/kubernetes/local \
+      --dest-server https://kubernetes.default.svc \
+      --dest-namespace springapp \
+      --sync-policy automated \
+      --auto-prune \
+      --self-heal
 
 Create and run the pipeline
   - Create PVC for workspace
