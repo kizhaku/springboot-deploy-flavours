@@ -6,5 +6,6 @@ metadata:
 secrets:
   - name: dockerhub-secret
   - name: sonar-auth
+  - name: git-credentials
 imagePullSecrets:
   - name: dockerhub-secret

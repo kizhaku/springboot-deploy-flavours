@@ -55,7 +55,7 @@ Install Tekton dashboard
     - <code>kubectl create -f infra/kubernetes/tekton/pipeline/test/pipeline-test-run.yml</code>
 
 Build and deploy app:
-- Create secret for docker push to repo
+Create secret for docker push to repo
   <code>
     kubectl create secret docker-registry dockerhub-secret \
   --docker-username=<your-dockerhub-username> \
@@ -63,12 +63,23 @@ Build and deploy app:
   --docker-email=<your-email> \
   -n tekton-pipelines
     </code>
+
+Create token for write access to repo. This will be used to update image tag.
+    kubectl create secret generic git-credentials \
+  --from-literal=username=tekton-bot \
+  --from-literal=password=<PERSONAL_ACCESS_TOKEN> \
+  -n tekton-pipelines
+
+Add secrets to the build bot
+kubectl apply -f infra/kubernetes/tekton/service/build-bot-serviceaccount.yaml  
+
 Install Git clone task
   <code>kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/git-clone/0.9/git-clone.yaml -n tekton-pipelines</code>
 Install Gradle task
   <code>kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/gradle/0.3/gradle.yaml -n tekton-pipelines</code>
 Install buildah task for building/pushing
   <code>kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/buildah/0.9/buildah.yaml -n tekton-pipelines</code>
+
 Install SonarQube
   - Create namespace for sonarqube
   <code>kubectl create namespace sonarqube</code>
@@ -84,6 +95,9 @@ Install SonarQube
     <code>kubectl port-forward service/sonarqube-sonarqube 9000:9000 -n sonarqube</code>
   - Create a secret for Sonar. Access UI, under security create a new token
     <code>kubectl create secret generic sonar-auth -n tekton-pipelines --from-literal=SONAR_TOKEN=<token></code>
+    
+    Add secrets to the build bot
+    kubectl apply -f infra/kubernetes/tekton/service/build-bot-serviceaccount.yaml
 
 Create and run the pipeline
   - Create PVC for workspace
