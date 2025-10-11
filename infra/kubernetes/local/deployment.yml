@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: springapp
-          image: docker.io/akizhaku/springapp:testing
+          image: docker.io/akizhaku/springapp:1.0.1
           ports:
             - containerPort: 8080
           env:
