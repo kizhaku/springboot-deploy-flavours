@@ -6,39 +6,17 @@
   minikube start --memory=4096 --cpus=4
   ```
 
-- **Check the context**
-
-  ```bash
-  kubectl config current-context
-  ```
-
-- **Deploy app**
+- **Create app deployment manifest**
 
   ```bash
    kubectl apply -f infra/kubernetes/local/deployment.yml
   ```
 
-- **Create service**
+- **Create app service manifest**
 
   ```bash
    kubectl apply -f infra/kubernetes/local/service.yml
   ```
-
-- **Verify**
-
-  ```bash
-  kubectl get svc
-  NAME                TYPE           CLUSTER-IP      EXTERNAL-IP   PORT(S)          AGE
-  kubernetes          ClusterIP      10.96.0.1       <none>        443/TCP          2y186d
-  springapp-service   LoadBalancer   10.106.70.249   <pending>    8081:32251/TCP   4d23h
-  ```
-
-  If minikube is runnning with docker driver, minikube ip may not route to host. Use a service to access it from hsot machine.
-  Within the cluster the service will be accessible at http://<service-name>:<port>/actuator/health
-
-  Can port forward on the host with kubectl port-forward service/springapp-service 8081:8081
-  Check application health at: http://127.0.0.1:8081/actuator/health
-  Api at: http://127.0.0.1:8081/swagger-ui/index.html
 
 # Install Tekton Pipeline
 
@@ -162,7 +140,7 @@ minikube start --kubernetes-version=v1.29.0 --cpus=4 --memory=4096
   kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/buildah/0.9/buildah.yaml -n tekton-pipelines
   ```
 
-# Install SonarQube
+## Install SonarQube
 
 - **Create namespace for sonarqube**
 
@@ -208,13 +186,13 @@ minikube start --kubernetes-version=v1.29.0 --cpus=4 --memory=4096
   kubectl create secret generic sonar-auth -n tekton-pipelines --from-literal=SONAR_TOKEN=<token>
   ```
 
-# Add Secrets to the Build Bot
+- **Add Secrets to the Build Bot**
 
 ```bash
 kubectl apply -f infra/kubernetes/tekton/service/sa-build-bot.yml
 ```
 
-# Install ArgoCD
+## Install ArgoCD
 
 - **Add repo**
 
@@ -257,6 +235,20 @@ kubectl apply -f infra/kubernetes/tekton/service/sa-build-bot.yml
   kubectl apply -f infra/kubernetes/argocd/springapp.yml -n argocd
   ```
 
+  - **Verify app deployment**
+
+  ```bash
+  kubectl get svc -n springapp
+  NAME                TYPE           CLUSTER-IP       EXTERNAL-IP   PORT(S)          AGE
+  springapp-service   LoadBalancer   10.107.103.214   <pending>     8081:32251/TCP   178m
+  ```
+  ```bash
+  kubectl port-forward svc/springapp-service 32251:8081 -n springapp
+  ```
+
+  Check application health at: http://127.0.0.1:32251/actuator/health
+  Api documentation at: http://127.0.0.1:32251/swagger-ui/index.html
+
   **Optional through CLI:**
 
   - Install argocd CLI.
@@ -293,7 +285,7 @@ kubectl apply -f infra/kubernetes/tekton/service/sa-build-bot.yml
   kubectl apply -f infra/kubernetes/tekton/pipeline/tekton-workspace-pvc.yml
   ```
 
-- **Create a service account**
+- **Create a service account with access to Docker, Sonar and Github secret**
 
   ```bash
   kubectl apply -f infra/kubernetes/tekton/pipeline/sa-build-bot.yml
@@ -310,3 +302,5 @@ kubectl apply -f infra/kubernetes/tekton/service/sa-build-bot.yml
   ```bash
   kubectl create -f infra/kubernetes/tekton/pipeline/pipelinerun-springapp.yml
   ```
+
+Tekton will build and publish the image to Docker hub and update the deployment.yml manifest with new image. ArgoCD monitoring infra/kubernetes/local will detect this commit and sync the cluster with new deployment.
