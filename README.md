@@ -5,7 +5,7 @@
 - A further enhancement to the Spring Boot app running with different flavours of deployment. Can be used as a template.
 - Uses Prometheus and Loki for health metrics, alerts, and logs collection.
 - Uses Grafana for metrics and logs visualization.
-- For Kubernetes deployment refer: (/infra/kubernetes/DEPLOYMENT.md)
+- For Kubernetes deployment refer to [this guide](/infra/kubernetes/DEPLOYMENT.md)
 
 #### Dependencies
 
