@@ -1,29 +1,11 @@
 # springboot-deploy-flavours
 
-## Standalone setup - VM
-## Kubernetes setup
-
 ## About the app
 
-- A further enhancement to the Spring Boot app running with different flavours of deployment. Ideally can be used as a template.
-- No database connection. Stores data in a static map. Gets reset with restart.
+- A further enhancement to the Spring Boot app running with different flavours of deployment. Can be used as a template.
 - Uses Prometheus and Loki for health metrics, alerts, and logs collection.
 - Uses Grafana for metrics and logs visualization.
-- Future iteration will be to containerize the app and tools, then shift the application and tools into a Kubernetes setup.
-  Update:
-  - This is working in AWS EKS.
-  - Next step: Automate the deployment.
-
-## Requirements
-
-- Collect app health metrics and display in Prometheus.
-- Collect logs using Promtail + Loki. Visualize in Grafana.
-- This setup is for a standalone environment.
-- Alerts will be good to have.
-
-## Setup
-
-### Application changes
+- For Kubernetes deployment refer: (/infra/kubernetes/DEPLOYMENT.md)
 
 #### Dependencies
 

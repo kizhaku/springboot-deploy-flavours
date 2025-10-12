@@ -101,7 +101,7 @@ Install SonarQube
     <code>kubectl create secret generic sonar-auth -n tekton-pipelines --from-literal=SONAR_TOKEN=<token></code>
 
 Add secrets to the build bot
-  kubectl apply -f infra/kubernetes/tekton/service/build-bot-serviceaccount.yaml
+  kubectl apply -f infra/kubernetes/tekton/service/sa-build-bot.yml
 
 Install ArgoCD
   Add repo
@@ -140,7 +140,7 @@ Create and run the pipeline
   - Create a service account
     <code>kubectl apply -f infra/kubernetes/tekton/pipeline/sa-build-bot.yml</code>
   - Create the pipeline
-    <code>kubectl apply -f infra/kubernetes/tekton/pipeline/pipeline-springapp-build-and-push.yml</code>
+    <code>kubectl apply -f infra/kubernetes/tekton/pipeline/pipeline-springapp.yml</code>
   - Run the pipeline
     <code>kubectl create -f infra/kubernetes/tekton/pipeline/pipelinerun-springapp.yml</code>
 

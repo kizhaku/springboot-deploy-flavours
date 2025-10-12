@@ -12,5 +12,5 @@ spec:
   workspaces:
     - name: shared-workspace
       persistentVolumeClaim:
-        claimName: tekton-workspace-pvc2
+        claimName: tekton-workspace-pvc
   serviceAccountName: build-bot
