@@ -18,7 +18,7 @@ spec:
         - name: dockerhub-secret
       containers:
         - name: springapp
-          image: docker.io/akizhaku/springapp:1.0.1
+          image: docker.io/akizhaku/springapp:1.0.2
           ports:
             - containerPort: 8080
           env:
