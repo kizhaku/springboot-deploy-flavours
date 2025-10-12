@@ -18,7 +18,7 @@
    kubectl apply -f infra/kubernetes/local/service.yml
   ```
 
-# Install Tekton Pipeline
+## Install Tekton Pipeline
 
 > Note: 
 > Might run into issue installing Tekton if the Kubernetes version doesn't match.
@@ -89,7 +89,7 @@ minikube start --kubernetes-version=v1.29.0 --cpus=4 --memory=4096
     kubectl create -f infra/kubernetes/tekton/pipeline/test/pipeline-test-run.yml
     ```
 
-# Build and Deploy App
+## Build and Deploy App
 
 - **Create secret for docker push to repo**
 
@@ -277,7 +277,7 @@ kubectl apply -f infra/kubernetes/tekton/service/sa-build-bot.yml
       --self-heal
     ```
 
-# Create and Run the Pipeline
+## Create and Run the Pipeline
 
 - **Create PVC for workspace**
 
