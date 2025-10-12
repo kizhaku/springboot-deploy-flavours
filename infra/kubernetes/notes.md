@@ -48,7 +48,7 @@ Install Tekton
         pod-security.kubernetes.io/audit=privileged \
         pod-security.kubernetes.io/warn=privileged
         </code>
-  - Test pipeline with a sample pipeline
+  Optional: Test pipeline with a sample pipeline
     - Pipeline
       - <code>kubectl apply -f infra/kubernetes/tekton/pipeline/test/pipeline-test.yml</code>
     - Pipeline run
@@ -64,21 +64,25 @@ Build and deploy app:
     -n tekton-pipelines
       </code>
 
+  Create secret for image pull during deployment
+    kubectl create secret docker-registry dockerhub-secret \
+    --docker-server=https://index.docker.io/v1/ \
+    --docker-username=<username> \
+    --docker-password=<access-token> \
+    -n springapp
+
 Create token for write access to repo. This will be used to update image tag.
       kubectl create secret generic git-credentials \
     --from-literal=username=tekton-bot \
     --from-literal=password=<PERSONAL_ACCESS_TOKEN> \
     -n tekton-pipelines
 
-Add secrets to the build bot
-  kubectl apply -f infra/kubernetes/tekton/service/build-bot-serviceaccount.yaml  
-
-  Install Git clone task
-    <code>kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/git-clone/0.9/git-clone.yaml -n tekton-pipelines</code>
-  Install Gradle task
-    <code>kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/gradle/0.3/gradle.yaml -n tekton-pipelines</code>
-  Install buildah task for building/pushing
-    <code>kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/buildah/0.9/buildah.yaml -n tekton-pipelines</code>
+Install Git clone task
+  <code>kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/git-clone/0.9/git-clone.yaml -n tekton-pipelines</code>
+Install Gradle task
+  <code>kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/gradle/0.3/gradle.yaml -n tekton-pipelines</code>
+Install buildah task for building/pushing
+  <code>kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/buildah/0.9/buildah.yaml -n tekton-pipelines</code>
 
 Install SonarQube
   - Create namespace for sonarqube
@@ -86,7 +90,7 @@ Install SonarQube
   - Add a values.yml for Helm infra/kubernetes/sonarqube/values.yml
     <code>helm repo add sonarqube https://SonarSource.github.io/helm-chart-sonarqube</code>
   - Create a monitoring secret
-    <code>kubectl create secret generic sonarqube-monitoring-passcode -n sonarqube --from-literal=passcode=sonarPass123</code>
+    <code>kubectl create secret generic sonarqube-monitoring-passcode -n sonarqube --from-literal=passcode=<passcode></code>
   - Install sonarqube
     <code>helm install sonarqube sonarqube/sonarqube -n sonarqube -f infra/kubernetes/sonarqube/values.yml</code>
   - Check sonarqube service
@@ -96,8 +100,8 @@ Install SonarQube
   - Create a secret for Sonar. Access UI, under security create a new token
     <code>kubectl create secret generic sonar-auth -n tekton-pipelines --from-literal=SONAR_TOKEN=<token></code>
 
-  Add secrets to the build bot
-    kubectl apply -f infra/kubernetes/tekton/service/build-bot-serviceaccount.yaml
+Add secrets to the build bot
+  kubectl apply -f infra/kubernetes/tekton/service/build-bot-serviceaccount.yaml
 
 Install ArgoCD
   Add repo
