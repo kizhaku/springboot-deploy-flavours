@@ -28,7 +28,7 @@ public class AppController {
 
     @GetMapping("hello")
     public ResponseEntity<String> sayHello() {
-        return new ResponseEntity<>("Hello there!", HttpStatus.OK);
+        return new ResponseEntity<>("Hello world!", HttpStatus.OK);
     }
 
     @PostMapping("user")
