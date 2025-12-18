@@ -28,6 +28,42 @@
 minikube start --kubernetes-version=v1.29.0 --cpus=4 --memory=4096
 ```
 
+- **Tekton operator install**
+
+This will install the operator and all workloads under tekton-pipelines namespace.
+kubectl apply -f https://storage.googleapis.com/tekton-releases/operator/latest/release.yaml
+
+- **Create trigger binding for incoming Github webhook**
+  kubectl apply -f infra/kubernetes/tekton/triggers/github-push-binding.yml
+
+- **Create the trigger template**
+  kubectl apply -f infra/kubernetes/tekton/triggers/springapp-template.yml
+
+- **Create event listener**
+  kubectl apply -f infra/kubernetes/tekton/triggers/github-listener.yml
+
+  kubectl get eventlisteners -n tekton-pipelines
+
+- **Provide access to EventListener**
+  kubectl apply -f infra/kubernetes/tekton/rbac/build-bot-trigger-access.yml
+
+- **Provide access to service account to create Tekton pipeline resources**
+  kubectl apply -f infra/kubernetes/tekton/rbac/build-bot-pipeline-access.yml
+
+
+- **Mock event listner trigger**
+  Port forward the event listner to listen on any port, say 9090:
+    kubectl port-forward svc/el-github-listener -n tekton-pipelines 9090:8080
+
+  Curl:
+    curl -X POST http://localhost:9090 \
+  -H "Content-Type: application/json" \
+  -d "{\"ref\": \"refs/heads/main\", \"repository\": {\"clone_url\": \"https://github.com/kizhaku/springboot-deploy-flavours.git\"}}"
+
+- **Tekton manual install**
+
+<details>
+
 - **Create a namespace for the pipeline**
 
   ```bash
@@ -89,6 +125,8 @@ minikube start --kubernetes-version=v1.29.0 --cpus=4 --memory=4096
     kubectl create -f infra/kubernetes/tekton/pipeline/test/pipeline-test-run.yml
     ```
 
+</details>
+
 ## Build and Deploy App
 
 - **Create secret for docker push to repo**
@@ -111,7 +149,7 @@ minikube start --kubernetes-version=v1.29.0 --cpus=4 --memory=4096
     -n springapp
   ```
 
-- **Create token for write access to repo**
+- **Create secret for write access to repo**
 
   This will be used to update image tag.
 

@@ -1,0 +1,47 @@
+apiVersion: triggers.tekton.dev/v1beta1
+kind: TriggerTemplate
+metadata:
+  name: springapp-template
+  namespace: tekton-pipelines
+spec:
+  params:
+    - name: git-repo-url
+    - name: git-revision
+  resourcetemplates:
+    - apiVersion: tekton.dev/v1
+      kind: PipelineRun
+      metadata:
+        generateName: springapp-run-
+      spec:
+        serviceAccountName: build-bot
+        pipelineRef:
+          name: springapp-build-and-push-without-sonar
+        taskRunSpecs:
+          - pipelineTaskName: build-and-push-image
+            stepTemplate:
+              env:
+                - name: DOCKER_CONFIG
+                  value: /tekton/home/.docker
+            podTemplate:
+              securityContext:
+                runAsUser: 0
+              volumes:
+                - name: docker-config
+                  secret:
+                    secretName: dockerhub-secret
+                    items:
+                      - key: .dockerconfigjson
+                        path: config.json
+              volumeMounts:
+                - name: docker-config
+                  mountPath: /root/.docker/
+
+        params:
+          - name: repo-url
+            value: $(params.git-repo-url)
+          - name: revision
+            value: $(params.git-revision)
+        workspaces:
+          - name: shared-workspace
+            persistentVolumeClaim:
+              claimName: tekton-workspace-pvc

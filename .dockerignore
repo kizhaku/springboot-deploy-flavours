@@ -1,0 +1,8 @@
+.gradle/
+.idea/
+build/
+ !build/libs/*.jar
+gradle/
+infra/
+logs/
+src/
